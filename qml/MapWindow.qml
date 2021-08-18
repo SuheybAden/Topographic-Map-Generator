@@ -20,8 +20,8 @@ ApplicationWindow {
 	property bool isShiftPressed: false
 	property string selectionMode: "Rect"
 	property var inputValues: { "selectionMode": selectionMode,
-	 "circleLat": circle.center.latitude,
-	 "circleLong": circle.center.longitude,
+	 "targetCountry": "",
+	 "targetCountryCode": "",
 	 "topLeftRectLat": rectSelection.topLeft.latitude,
 	 "topLeftRectLong": rectSelection.topLeft.longitude,
 	 "bottomRightRectLat": rectSelection.bottomRight.latitude,
@@ -33,7 +33,7 @@ ApplicationWindow {
 			circle.center = QtPositioning.coordinate(0, 0)
 			circle.radius = 0
 			}
-		else if(mode === "Circle"){
+		else if(mode === "Country"){
 			rectSelection.topLeft = QtPositioning.coordinate(0, 0)
 			rectSelection.bottomRight = QtPositioning.coordinate(0, 0)
 			}
@@ -54,7 +54,7 @@ ApplicationWindow {
 
 			// Sets up the OpenStreetMaps plugin
 			Plugin {
-				id: osmPlugin
+				id: mapPlugin
 				name: "osm"
 			}
 
@@ -62,7 +62,7 @@ ApplicationWindow {
 			Map {
 				id: map
 				anchors.fill: parent
-				plugin: osmPlugin
+				plugin: mapPlugin
 				zoomLevel: 3
 				
 				// The circle that marks which country to generate the STL for
@@ -94,6 +94,16 @@ ApplicationWindow {
 					}
 			}
 
+			GeocodeModel {
+				id: geocodeModel
+				plugin: mapPlugin
+				autoUpdate: false
+				onLocationsChanged: {
+					inputValues.targetCountry = geocodeModel.get(geocodeModel.count - 1).address.country
+					inputValues.targetCountryCode = geocodeModel.get(geocodeModel.count - 1).address.countryCode
+				}
+			}
+
 			// Handles mouse events in the area of the map
 			MouseArea {
 				id: mouseArea
@@ -120,11 +130,14 @@ ApplicationWindow {
 							rectSelection.topLeft = topLeftCoord
 							rectSelection.bottomRight = topLeftCoord
 							}
-						else if(selectionMode === "Circle"){
+						else if(selectionMode === "Country"){
 							mouse.accepted = true
 
 							circle.center = map.toCoordinate(Qt.point(mouse.x,mouse.y))
 							circle.radius = 100000
+
+							geocodeModel.query = circle.center
+							geocodeModel.update()
 							}
 						}
 					}
@@ -169,7 +182,7 @@ ApplicationWindow {
 					RadioButton{
 						text: "By Country"
 						exclusiveGroup: radioGroup
-						onClicked: setSelectionMode("Circle")
+						onClicked: setSelectionMode("Country")
 					}
 				}
 			}
@@ -177,7 +190,7 @@ ApplicationWindow {
 				Button {
 					text: "Generate STL"
 					onClicked: {
-						backend.generate_mesh(inputValues)
+						backend.generateMesh(inputValues)
 					}
 				}
 			}
