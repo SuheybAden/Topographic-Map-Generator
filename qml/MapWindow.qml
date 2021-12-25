@@ -19,13 +19,16 @@ ApplicationWindow {
 	property QtObject backend
 	property bool isShiftPressed: false
 	property string selectionMode: "Rect"
+	property string apiKey
 	property var inputValues: { "selectionMode": selectionMode,
 	 "targetCountry": "",
 	 "targetCountryCode": "",
 	 "topLeftRectLat": rectSelection.topLeft.latitude,
 	 "topLeftRectLong": rectSelection.topLeft.longitude,
 	 "bottomRightRectLat": rectSelection.bottomRight.latitude,
-	 "bottomRightRectLong": rectSelection.bottomRight.longitude}
+	 "bottomRightRectLong": rectSelection.bottomRight.longitude,
+	 "apiKey": apiKey
+	 }
 
 	// Sets the selection mode for the map
 	function setSelectionMode(mode: string): string{
@@ -47,10 +50,10 @@ ApplicationWindow {
 		// Main Layout containing the map
 		ColumnLayout {
 			id: mapLayout
-			anchors.right: inputsLayout.left
-			anchors.left: parent.left
-			anchors.top: parent.top
-			anchors.bottom: parent.bottom
+			// anchors.right: inputsLayout.left
+			// anchors.left: parent.left
+			// anchors.top: parent.top
+			// anchors.bottom: parent.bottom
 
 			// Sets up the OpenStreetMaps plugin
 			Plugin {
@@ -61,7 +64,7 @@ ApplicationWindow {
 			// The map widget
 			Map {
 				id: map
-				anchors.fill: parent
+				// anchors.fill: parent
 				plugin: mapPlugin
 				zoomLevel: 3
 				
@@ -107,7 +110,7 @@ ApplicationWindow {
 			// Handles mouse events in the area of the map
 			MouseArea {
 				id: mouseArea
-				anchors.fill: parent
+				// anchors.fill: parent
 				focus: true
 
 				Keys.onPressed: {
@@ -187,10 +190,12 @@ ApplicationWindow {
 				}
 			}
 			RowLayout {
+				// Button for generating a mesh
 				Button {
 					text: "Generate STL"
 					onClicked: {
 						backend.generateMesh(inputValues)
+						// console.log(apiKey);
 					}
 				}
 			}
