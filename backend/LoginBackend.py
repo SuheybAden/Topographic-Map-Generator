@@ -9,7 +9,7 @@ class LoginBackend(QObject):
 		self.downloadManager = DownloadManager()
 
 	# Signals to send data with
-	signalLogin = pyqtSignal(bool, str, QObject)
+	signalLogin = pyqtSignal(bool, str)
 	signalBackend = pyqtSignal(QObject, QObject)
 
 	@pyqtSlot(QVariant)
@@ -25,11 +25,11 @@ class LoginBackend(QObject):
 
 		if self.downloadManager.login(username, password):
 			print("Successfully logged into USGS")
-			self.signalLogin.emit(True, self.downloadManager.apiKey, MapBackend())
+			self.signalLogin.emit(True, self.downloadManager.apiKey)
 
 		else:
 			print("Failed to login")
-			self.signalLogin.emit(False, None, None)
+			self.signalLogin.emit(False, None)
 
 	# Slot that generates a backend
 	@pyqtSlot(QObject)

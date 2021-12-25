@@ -80,7 +80,7 @@ ApplicationWindow {
     Connections {
         target: backend
 
-        function onSignalLogin(boolValue, apiKey, mapBackend) {
+        function onSignalLogin(boolValue, apiKey) {
             if (boolValue) {
                 loginWindow.close()
 
@@ -88,8 +88,8 @@ ApplicationWindow {
                 let win = component.createObject()
                 win.apiKey = apiKey
                 backend.createMapBackend(win)
-                // win.backend = mapBackend
-                win.show()
+                console.log("Backend in login signal: ")
+                console.log(backend.createMapBackend(win))
             } else{
                 // CHANGE USER COLOR
                 usernameField.Material.foreground = Material.Pink
@@ -104,10 +104,10 @@ ApplicationWindow {
         target: backend
 
         function onSignalBackend(win, backend) {
-            // console.log("Backend in login signal: ");
-            // console.log(backend);
-            // win.backend = backend
-            // win.show();
+            console.log("Backend in login signal: ");
+            console.log(backend);
+            win.backend = backend
+            win.show();
         }
     }
 
